@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PBR 1倍以下の日本株リスト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #f4f4f4;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>PBR 1倍以下の日本株リスト</h1>
+    <button onclick="fetchPBRData()">企業リストを取得</button>
+    <ul id="stock-list"></ul>
+
+    <script>
+        async function fetchPBRData() {
+            const stockList = document.getElementById("stock-list");
+            stockList.innerHTML = "<li>データ取得中...</li>";
+
+            try {
+                // ✅ 実際のAPI Gatewayのエンドポイントに修正
+                const apiUrl = "https://sahvrwn3h1.execute-api.ap-northeast-1.amazonaws.com/myFunction";  
+                
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error("データ取得に失敗しました");
+
+                const data = await response.json();
+                
+                // リストをクリア
+                stockList.innerHTML = "";
+
+                if (data.length === 0) {
+                    stockList.innerHTML = "<li>PBR 1倍以下の企業はありません</li>";
+                    return;
+                }
+
+                // 取得データをリストに追加
+                data.forEach(stock => {
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `${stock.name} (${stock.ticker}) - PBR: ${stock.pbr}`;
+                    stockList.appendChild(listItem);
+                });
+
+            } catch (error) {
+                stockList.innerHTML = `<li style="color:red;">エラー: ${error.message}</li>`;
+            }
+        }
+    </script>
+
+</body>
+</html>
